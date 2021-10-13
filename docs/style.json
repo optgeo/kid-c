@@ -1,0 +1,55 @@
+{
+  "version": 8,
+  "center": [
+    138.779256,
+    35.158042
+  ],
+  "zoom": 17,
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "rgb(40, 40, 40)"
+      }
+    },
+    {
+      "id": "voxel",
+      "type": "fill-extrusion",
+      "source": "voxel",
+      "source-layer": "voxel",
+      "paint": {
+        "fill-extrusion-base": [
+          "get",
+          "h"
+        ],
+        "fill-extrusion-color": [
+          "get",
+          "color"
+        ],
+        "fill-extrusion-height": [
+          "+",
+          [
+            "get",
+            "h"
+          ],
+          [
+            "get",
+            "spacing"
+          ]
+        ]
+      }
+    }
+  ],
+  "sources": {
+    "voxel": {
+      "type": "vector",
+      "attribution": "出典:静岡県ポイントクラウドデータベース",
+      "minzoom": 10,
+      "maxzoom": 18,
+      "tiles": [
+        "https://x.optgeo.org/kid-c/zxy/{z}/{x}/{y}.pbf"
+      ]
+    }
+  }
+}
