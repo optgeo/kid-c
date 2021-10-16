@@ -1,7 +1,7 @@
 require './constants'
 
 task :style do
-  sh "ruby style.rb > docs/style.json"
+  sh "charites build style/style.yml docs/style.json"
 end
 
 task :optimize do
@@ -46,8 +46,8 @@ end
 
 task :continuous_deploy do
   20.times {|i|
-    sh "sleep 10000"
     sh "rake deploy"
+    sh "sleep 10000"
   }
 end
 

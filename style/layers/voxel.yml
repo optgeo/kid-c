@@ -1,0 +1,17 @@
+id: voxel
+type: fill-extrusion
+source: voxel
+source-layer: voxel
+paint:
+  fill-extrusion-base:
+    - get
+    - h
+  fill-extrusion-color:
+    - get
+    - color
+  fill-extrusion-height:
+    - +
+    - - get
+      - h
+    - - get
+      - spacing

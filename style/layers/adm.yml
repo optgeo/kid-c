@@ -1,0 +1,6 @@
+id: adm
+type: fill
+source: adm
+source-layer: AdmArea
+paint:
+  fill-color: rgb(60, 60, 60)

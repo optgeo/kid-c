@@ -3,7 +3,7 @@ GENERATION = 'c'
 
 TMP_DIR = 'tmp'
 LOT_DIR = 'lot'
-LIST_PATH = '../kid-b/west.txt'
+LIST_PATH = 'shimoda.txt'
 MBTILES_PATH = "#{TMP_DIR}/tiles.mbtiles"
 GDAL_DATA = '/usr/share/gdal'
 

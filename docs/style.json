@@ -14,6 +14,15 @@
       }
     },
     {
+      "id": "adm",
+      "type": "fill",
+      "source": "adm",
+      "source-layer": "AdmArea",
+      "paint": {
+        "fill-color": "rgb(60, 60, 60)"
+      }
+    },
+    {
       "id": "voxel",
       "type": "fill-extrusion",
       "source": "voxel",
@@ -49,6 +58,14 @@
       "maxzoom": 18,
       "tiles": [
         "https://x.optgeo.org/kid-c/zxy/{z}/{x}/{y}.pbf"
+      ]
+    },
+    "adm": {
+      "type": "vector",
+      "attribution": "<a title='測量法に基づく国土地理院長承認(使用)R 2JHs 1065'>R 2JHs 1065</a>",
+      "maxzoom": 13,
+      "tiles": [
+        "https://optgeo.github.io/fgd-adm/zxy/{z}/{x}/{y}.pbf"
       ]
     }
   }
