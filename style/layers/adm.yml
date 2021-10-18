@@ -3,4 +3,15 @@ type: fill
 source: adm
 source-layer: AdmArea
 paint:
-  fill-color: rgb(60, 60, 60)
+  fill-color: rgb(91, 146, 229)
+  fill-outline-color: rgba(91, 146, 229, 0)
+  fill-opacity: 
+    - interpolate
+    -
+      - linear
+    -
+      - zoom
+    - 6
+    - 0
+    - 10
+    - 1

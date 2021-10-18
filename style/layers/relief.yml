@@ -1,0 +1,17 @@
+id: relief
+type: raster
+source: relief
+minzoom: 0
+maxzoom: 9
+paint: 
+  raster-opacity: 
+    - interpolate
+    - 
+      - linear
+    -
+      - zoom
+    - 6
+    - 1
+    - 10
+    - 0
+    

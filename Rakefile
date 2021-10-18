@@ -14,7 +14,7 @@ node ~/vt-optimizer/index.js -m #{MBTILES_PATH}
 end
 
 task :deploy do
-  $notifier.ping "🎆#{pomocode}deploy started"
+  notify "🎆#{pomocode}deploy started"
   tmp_dir = "#{TMP_DIR}/zxy"
   sh "mkdir #{tmp_dir}" unless File.exist?(tmp_dir)
   sh "mkdir docs/zxy" unless File.exist?('docs/zxy')
@@ -22,10 +22,21 @@ task :deploy do
     mbtiles_path = "#{TMP_DIR}/deploy-#{z}.mbtiles"
     files = Dir.glob("#{LOT_DIR}/*-#{z}.mbtiles")
     files.select! {|path| !File.exist?("#{path}-journal")}
+    files.sort!
+    n_pages = (files.size.to_f / PAGE_SIZE).ceil
+    n_pages.times {|page|
+      page_path = "#{TMP_DIR}/deploy-#{z}-#{page}.mbtiles"
+      sh <<-EOS
+tile-join --force --output=#{page_path} \
+--no-tile-size-limit \
+#{files.slice(page * PAGE_SIZE, PAGE_SIZE).join(' ')}
+      EOS
+      notify "🎆#{pomocode}#{page + 1} of #{n_pages} for #{z}" if z >= 17
+    }
     sh <<-EOS
 tile-join --force --output=#{mbtiles_path} \
 --no-tile-size-limit \
-#{files.join(' ')}
+#{TMP_DIR}/deploy-#{z}-*.mbtiles
     EOS
     sh <<-EOS
 tile-join --force --output-to-directory=#{tmp_dir} \
@@ -38,10 +49,10 @@ tile-join --force --output-to-directory=#{tmp_dir} \
 mv #{tmp_dir}/#{zc} docs/zxy
       EOS
     }
-    $notifier.ping "🎆#{pomocode}deployed #{z}"
+    notify "🎆#{pomocode}deployed #{z}"
   }
-  #sh "rm -v #{MBTILES_PATH}"
-  $notifier.ping "🎆#{pomocode}deploy finished"
+  sh "rm -v #{TMP_DIR}/deploy-*.mbtiles"
+  notify "🎆#{pomocode}deploy finished"
 end
 
 task :continuous_deploy do
@@ -51,18 +62,36 @@ task :continuous_deploy do
   }
 end
 
+task :health_check do
+  Dir.glob("#{LOT_DIR}/*.mbtiles") {|path|
+    next if File.exist?("#{path}-journal")
+    count = `sqlite3 #{path} 'select count(*) from tiles;'`.strip.to_i
+    next unless count == 0 
+    print "#{path} #{count}\n"
+  }
+end
+
 task :clean do
   sh "rm -r #{TMP_DIR}/zxy" if File.exist?("#{TMP_DIR}/zxy")
   sh "rm #{TMP_DIR}/*" unless Dir.glob("#{TMP_DIR}/*").size == 0
   sh "rm #{LOT_DIR}/*" unless Dir.glob("#{LOT_DIR}/*").size == 0
 end
 
+task :fix do
+  sh "ruby fix.rb > fix.txt"
+end
+
 task :default do
-  $notifier.ping "🐧#{pomocode} started"
+  notify "🐧#{pomocode} started"
+  task_name = File.basename(LIST_PATH, '.txt')
+  list_size = `wc -l #{LIST_PATH}`.to_i
+  count = 0
   File.foreach(LIST_PATH) {|url|
+    count += 1
     skip_all = true
     url = url.strip
     basename = File.basename(url.split('/')[-1], '.zip')
+#    basename = File.basename(url.split('/')[-1], '.las')
     next unless hostmatch(basename)
     tmp_path = "#{TMP_DIR}/#{basename}"
     cmd = <<-EOS
@@ -71,9 +100,17 @@ unar -f -o #{TMP_DIR} #{tmp_path}.zip 1>&2 ; \
 GDAL_DATA=#{GDAL_DATA} BASENAME=#{basename} ruby reproject_pipeline.rb | \
 pdal pipeline --stdin ;
     EOS
+    ## kakegawa
+#    cmd = <<-EOS
+#curl -o #{tmp_path}.las #{url} ; \
+#GDAL_DATA=#{GDAL_DATA} BASENAME=#{basename} ruby reproject_pipeline.rb | \
+#pdal pipeline --stdin ;
+#    EOS
+    ##
     MAXZOOM.downto(MINZOOM) {|z|
       dst_path = "#{LOT_DIR}/#{basename}-#{z}.mbtiles"
-      if SKIP && File.exist?(dst_path) && !File.exist?("#{dst_path}-journal")
+      if SKIP && File.exist?(dst_path) && 
+          !File.exist?("#{dst_path}-journal") ## && File.size(dst_path) > 20000
         $stderr.print "skip #{dst_path} because it is there.\n"
         next
       else
@@ -97,7 +134,7 @@ tippecanoe \
 rm -v #{TMP_DIR}/#{basename}*
     EOS
     sh cmd unless skip_all
-    $notifier.ping "💫#{pomocode} #{basename}"
+    notify"💫#{pomocode} #{basename} (#{task_name}, #{count} of #{list_size})"
   }
-  $notifier.ping "✨#{pomocode} finished"
+  notify "✨#{pomocode} #{task_name} finished"
 end

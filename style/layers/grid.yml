@@ -1,0 +1,15 @@
+id: grid
+source: grid
+source-layer: sizuokaLP0
+type: fill
+paint: 
+  fill-color: rgb(60, 60, 60)
+  fill-opacity: 
+    - interpolate
+    - - linear
+    - - zoom
+    - 10
+    - 0
+    - 16
+    - 1
+

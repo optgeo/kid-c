@@ -14,12 +14,70 @@
       }
     },
     {
+      "id": "relief",
+      "type": "raster",
+      "source": "relief",
+      "minzoom": 0,
+      "maxzoom": 9,
+      "paint": {
+        "raster-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          6,
+          1,
+          10,
+          0
+        ]
+      }
+    },
+    {
       "id": "adm",
       "type": "fill",
       "source": "adm",
       "source-layer": "AdmArea",
       "paint": {
-        "fill-color": "rgb(60, 60, 60)"
+        "fill-color": "rgb(91, 146, 229)",
+        "fill-outline-color": "rgba(91, 146, 229, 0)",
+        "fill-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          6,
+          0,
+          10,
+          1
+        ]
+      }
+    },
+    {
+      "id": "grid",
+      "source": "grid",
+      "source-layer": "sizuokaLP0",
+      "type": "fill",
+      "paint": {
+        "fill-color": "rgb(60, 60, 60)",
+        "fill-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          0,
+          16,
+          1
+        ]
       }
     },
     {
@@ -35,6 +93,19 @@
         "fill-extrusion-color": [
           "get",
           "color"
+        ],
+        "fill-extrusion-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          0,
+          12,
+          1
         ],
         "fill-extrusion-height": [
           "+",
@@ -63,9 +134,28 @@
     "adm": {
       "type": "vector",
       "attribution": "<a title='測量法に基づく国土地理院長承認(使用)R 2JHs 1065'>R 2JHs 1065</a>",
+      "minzoom": 7,
       "maxzoom": 13,
       "tiles": [
         "https://optgeo.github.io/fgd-adm/zxy/{z}/{x}/{y}.pbf"
+      ]
+    },
+    "relief": {
+      "type": "raster",
+      "minzoom": 0,
+      "maxzoom": 5,
+      "tileSize": 512,
+      "tiles": [
+        "https://optgeo.github.io/relief/zxy/{z}/{x}/{y}.png"
+      ]
+    },
+    "grid": {
+      "type": "vector",
+      "attribution": "<a href=\"https://www.geospatial.jp/ckan/dataset/shizuoka-2019-pointcloud/resource/d5e98a7b-f15c-45b0-bf40-0287f5b1de68\">静岡県富士山南東部・伊豆東部点群データ:LP データ(静岡県／G空間情報センター)</a>",
+      "minzoom": 10,
+      "maxzoom": 18,
+      "tiles": [
+        "https://gic-shizuoka.s3-ap-northeast-1.amazonaws.com/2020/Vectortile/LP00/{z}/{x}/{y}.pbf"
       ]
     }
   }

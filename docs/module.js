@@ -44,15 +44,21 @@ const showMap = async (texts) => {
   }
 
   map.on('load', () => {
-    map.on('click', 'voxel', (e) => {
+    map.on('click', 'voxel', e => {
       let u = new SpeechSynthesisUtterance()
       u.lang = 'en-GB'
       u.text = 'a voxel of ' + e.features[0].properties.spacing + 'meters.'
       if (voice) u.voice = voice
+      //speechSynthesis.cancel()
+      //speechSynthesis.speak(u)
+    })
+    map.on('click', 'grid', e => {
+      let u = new SpeechSynthesisUtterance()
+      u.lang = 'ja-JP'
+      u.text = e.features[0].properties.MESH_NO
       speechSynthesis.cancel()
       speechSynthesis.speak(u)
     })
-
   })
 }
 
