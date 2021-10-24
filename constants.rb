@@ -1,9 +1,13 @@
 SKIP = true
 GENERATION = 'c'
 
-TMP_DIR = 'tmp'
+LIST_PATH = 'nirayama.txt'
+#HOSTS = %w{m321 m343 m354}
+#HOSTS = %w{m321 m343}
+HOSTS = %w{m343}
+
+TMP_DIR = '/tmp'
 LOT_DIR = 'lot'
-LIST_PATH = 'mishima2.txt'
 MBTILES_PATH = "#{TMP_DIR}/tiles.mbtiles"
 GDAL_DATA = '/usr/share/gdal'
 PAGE_SIZE = 50
@@ -20,10 +24,6 @@ MINZOOM = 10
 MINCOPYZOOM = 10
 
 LAYER = 'voxel'
-
-#HOSTS = %w{m321 m343 m354}
-HOSTS = %w{m321 m343}
-#HOSTS = %w{m354}
 
 SLACK = true
 $notifier = nil

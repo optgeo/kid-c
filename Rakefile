@@ -31,7 +31,7 @@ tile-join --force --output=#{page_path} \
 --no-tile-size-limit \
 #{files.slice(page * PAGE_SIZE, PAGE_SIZE).join(' ')}
       EOS
-      notify "🎆#{pomocode}#{page + 1} of #{n_pages} for #{z}" if z >= 17
+      # notify "🎆#{pomocode}#{page + 1} of #{n_pages} for #{z}" if z >= 17
     }
     sh <<-EOS
 tile-join --force --output=#{mbtiles_path} \
@@ -58,7 +58,7 @@ end
 task :continuous_deploy do
   20.times {|i|
     sh "rake deploy"
-    sh "sleep 10000"
+    sh "sleep 36000"
   }
 end
 
@@ -82,9 +82,9 @@ task :fix do
 end
 
 task :default do
-  notify "🐧#{pomocode} started"
   task_name = File.basename(LIST_PATH, '.txt')
   list_size = `wc -l #{LIST_PATH}`.to_i
+  notify "🐧#{pomocode} #{task_name} (#{list_size}) started"
   count = 0
   File.foreach(LIST_PATH) {|url|
     count += 1
@@ -134,7 +134,7 @@ tippecanoe \
 rm -v #{TMP_DIR}/#{basename}*
     EOS
     sh cmd unless skip_all
-    notify"💫#{pomocode} #{basename} (#{task_name}, #{count} of #{list_size})"
+    notify"💫#{pomocode} #{basename} (#{task_name}, #{count} of #{list_size})" unless skip_all
   }
-  notify "✨#{pomocode} #{task_name} finished"
+  notify "✨#{pomocode} #{task_name} (#{list_size}) finished"
 end
