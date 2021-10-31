@@ -15,14 +15,19 @@ const init = () => {
   style('style.css')
   style('maplibre-gl.css')
   script('maplibre-gl.js')
-  const map = document.createElement('div')
-  map.id = 'map'
-  document.body.appendChild(map)
+
+  const inputs = document.getElementById('menu').getElementsByTagName('input');
+  for (const input of inputs) {
+    input.onclick = (layer) => {
+      map.setStyle(layer.target.id)
+    }
+  }
 }
 init()
 
+let map
 const showMap = async (texts) => {
-  const map = new maplibregl.Map({
+  map = new maplibregl.Map({
     container: 'map',
     hash: true,
     style: 'style.json',
@@ -62,13 +67,6 @@ const showMap = async (texts) => {
   })
 }
 
-const main = async () => {
-  if (typeof maplibregl == 'undefined') {
-    window.onload = () => {
-      showMap()
-    }
-  } else {
-    showMap()
-  }
+window.onload = () => {
+  showMap()
 }
-main()
