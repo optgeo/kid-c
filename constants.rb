@@ -1,10 +1,11 @@
 SKIP = true
 GENERATION = 'c'
 
-LIST_PATH = 'amagi.txt'
+LIST_PATH = '20211105.txt'
+HOSTS = %w{m358}
 #HOSTS = %w{m321 m343 m354}
 #HOSTS = %w{m321 m343}
-HOSTS = %w{m999 m999 m999 m343 m999 m999 m999 m999 m999 m999 m999 m999 m999 m999 m999 m999}
+#HOSTS = %w{m999 m999 m999 m999 m999 m999 m999 m999 m999 m999 m999 m999 m999 m999 m349 m999}
 
 TMP_DIR = '/tmp'
 DEPLOY_TMP_DIR = 'tmp'

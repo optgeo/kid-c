@@ -115,8 +115,15 @@ pdal pipeline --stdin ;
       work_path = "#{TMP_DIR}/#{basename}-#{z}.mbtiles"
       if SKIP && File.exist?(dst_path) && 
           !File.exist?("#{dst_path}-journal") ## && File.size(dst_path) > 20000
-        $stderr.print "skip #{dst_path} because it is there.\n"
-        next
+        tile_count = `sqlite3 #{dst_path} 'select count(*) from tiles'`.strip.to_i
+        if tile_count == 0
+          $stderr.print "deleted unhealthy #{dst_path}.\n"
+          sh "rm #{dst_path}"
+          skip_all = false
+        else
+          $stderr.print "skip #{dst_path} because it has #{tile_count} tiles.\n"
+          next
+        end
       else
         skip_all = false
       end
@@ -131,12 +138,12 @@ tippecanoe \
 --force \
 --output=#{work_path} \
 --no-tile-size-limit \
---no-feature-limit ;
+--no-feature-limit ; \
+mv #{work_path} #{dst_path} ;
       EOS
       cmd.chomp!
     }
     cmd += <<-EOS
-mv #{work_path} #{dst_path}; \
 rm -v #{TMP_DIR}/#{basename}*
     EOS
     cmd.chomp!

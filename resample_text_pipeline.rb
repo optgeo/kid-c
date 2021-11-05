@@ -16,7 +16,7 @@ pipeline:
     filename: #{src_path}
     type: readers.las
   -
-    type: filters.voxelcentroidnearestneighbor
+    type: filters.voxelcenternearestneighbor
     cell: #{spacing}
   -
     type: writers.text
