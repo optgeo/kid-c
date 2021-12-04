@@ -9,6 +9,7 @@ spacing = (BASE ** (Z_ONE_METER - z)).to_f
 n = 0
 
 first = true
+start_time = Time.now
 while gets
   if first
     first = false
@@ -61,3 +62,10 @@ tippecanoe:
   print JSON.dump(f), "\n"
 end
 
+def hms(s)
+  min, sec = s.to_i.divmod(60)
+  hour, min = min.divmod(60)
+  "%02d:%02d:%02d" % [hour, min, sec]
+end
+
+$stderr.print "\n[#{z}] #{hms(Time.now - start_time)}s\n"

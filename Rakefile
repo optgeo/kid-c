@@ -29,22 +29,32 @@ task :deploy do
     mbtiles_path = "#{DEPLOY_TMP_DIR}/deploy-#{z}.mbtiles"
     files = Dir.glob("#{LOT_DIR}/*-#{z}.mbtiles")
     files.select! {|path| !File.exist?("#{path}-journal")}
+    files.select! {|path| File.size(path) != 0}
     files.sort!
     n_pages = (files.size.to_f / PAGE_SIZE).ceil
     n_pages.times {|page|
       page_path = "#{DEPLOY_TMP_DIR}/deploy-#{z}-#{page}.mbtiles"
+      fs = files.slice(page * PAGE_SIZE, PAGE_SIZE).select {|path|
+        File.exists?(path) && File.size(path) != 0
+      }.join(' ')
       sh <<-EOS
 tile-join --force --output=#{page_path} \
 --no-tile-size-limit \
-#{files.slice(page * PAGE_SIZE, PAGE_SIZE).join(' ')}
+#{fs}
       EOS
       # notify "🎆#{pomocode}#{page + 1} of #{n_pages} for #{z}" if z >= 17
     }
     sh <<-EOS
 tile-join --force --output=#{mbtiles_path} \
 --no-tile-size-limit \
-#{DEPLOY_TMP_DIR}/deploy-#{z}-*.mbtiles
+#{DEPLOY_TMP_DIR}/deploy-#{z}-*.mbtiles ; \
+rm -v #{DEPLOY_TMP_DIR}/deploy-#{z}-*.mbtiles
     EOS
+    if z == 19 # because z=19 is too large
+      sh <<-EOS
+rm -r docs/zxy/#{z}
+      EOS
+    end
     sh <<-EOS
 tile-join --force --output-to-directory=#{tmp_dir} \
 --no-tile-size-limit --no-tile-compression \
@@ -101,15 +111,14 @@ task :default do
     skip_all = true
     url = url.strip
     basename = File.basename(url.split('/')[-1], '.zip')
-    next unless hostmatch(basename)
+    next unless taskmatch(url)
     tmp_path = "#{TMP_DIR}/#{basename}"
     cmd = <<-EOS
 curl -o #{tmp_path}.zip #{url} ; \
 unar -f -o #{TMP_DIR} #{tmp_path}.zip 1>&2 ; \
-GDAL_DATA=#{GDAL_DATA} BASENAME=#{basename} ruby reproject_pipeline.rb | \
+BASENAME=#{basename} ruby reproject_pipeline.rb | \
 pdal pipeline --stdin ;
     EOS
-    cmd.chomp!
     MAXZOOM.downto(MINZOOM) {|z|
       dst_path = "#{LOT_DIR}/#{basename}-#{z}.mbtiles"
       work_path = "#{TMP_DIR}/#{basename}-#{z}.mbtiles"
@@ -141,14 +150,21 @@ tippecanoe \
 --no-feature-limit ; \
 mv #{work_path} #{dst_path} ;
       EOS
-      cmd.chomp!
     }
     cmd += <<-EOS
 rm -v #{TMP_DIR}/#{basename}*
     EOS
-    cmd.chomp!
     sh cmd unless skip_all
     notify"#{pomocode} #{basename} (#{task_name}, #{count} of #{list_size})" unless skip_all
   }
   notify "✨#{pomocode} #{task_name} (#{list_size}) finished"
 end
+
+task :maplibre do
+  %w{js js.map css}.each {|ext|
+    sh <<-EOS
+curl -o docs/maplibre-gl.#{ext} -L https://unpkg.com/maplibre-gl@#{MAPLIBRE_VERSION}/dist/maplibre-gl.#{ext}
+    EOS
+  } 
+end
+
