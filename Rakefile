@@ -1,9 +1,11 @@
 require './constants'
 
+desc 'build docs/style.json from style/style.yml using charites'
 task :style do
   sh "charites build style/style.yml docs/style.json"
 end
 
+desc 'create a single tiles.mbtiles from zoom-wise parts'
 task :join do
   files = (MINZOOM..MAXZOOM).map {|v| "#{DEPLOY_TMP_DIR}/deploy-#{v}.mbtiles"}
   sh <<-EOS
@@ -14,12 +16,14 @@ rm -v #{DEPLOY_TMP_DIR}/deploy-*.mbtiles
   notify "🎇#{MBTILES_PATH} is updated"
 end
 
+desc 'run vt-optimizer'
 task :optimize do
   sh <<-EOS
 node ~/vt-optimizer/index.js -m #{MBTILES_PATH}
   EOS
 end
 
+desc 'copy .pbf vector tiles from .mbtiles'
 task :deploy do
   notify "🎆#{pomocode}deploy started"
   tmp_dir = "#{DEPLOY_TMP_DIR}/zxy"
@@ -71,6 +75,7 @@ mv #{tmp_dir}/#{zc} docs/zxy
   notify "🎆#{pomocode}deploy finished"
 end
 
+desc 'deploy .pbf files continuously - useful for a long production'
 task :continuous_deploy do
   20.times {|i|
     sh "rake deploy"
